@@ -1,0 +1,23 @@
+{
+    "name": "solitaire",
+    "version": "0.0.0",
+
+    "description": "A node.js utility for the Solitaire cipher.",
+    "main": "index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/defectivebit/solitaire.git"
+    },
+    "keywords": [
+        "solitaire",
+        "cipher",
+        "cli"
+    ],
+
+    "author": "Brian Tkatch (brian@defectivebit.com)",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/defectivebit/solitaire/issues"
+    },
+    "homepage": "https://github.com/defectivebit/solitaire#readme"
+}

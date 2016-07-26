@@ -1,28 +1,56 @@
+var crypto = require("crypto");
+
 module.exports = {
+    generateKey: function(passphrase) {
+        // If the user supplies a passphrase, we derive a key from that.
+        if (passphrase) {
+
+        }
+        // The user did not supply a passphrase, so we will generate random key
+        // from scratch.
+
+        // Create an unshuffled deck, literally the numbers 1-54 in sequence.
+        key = Array.apply(0, Array(54)).map(function (_, i) { return i + 1; });
+
+        // Shuffle the key using values from the crypto library.
+        var ci = key.length, temp, ri;
+
+        while (0 !== ci) {
+            ri = Math.floor((crypto.randomBytes(1)[0] / 255) * ci);
+            ci -= 1;
+
+            temp = key[ci];
+            key[ci] = key[ri];
+            key[ri] = temp;
+        }
+
+        return key;
+    },
+
     validateKey: function(key) {
         // The key is an array and should have spades as 1-13, hearts as 14-26,
         // diamonds as 27-39, clubs as 40-52, joker A as 53 and joker B as 54.
         // Validate the key before continuing.
         numbersHad = {
-            s1 = false, s2 = false, s3 = false, s4 = false, s5 = false,
-            s6 = false, s7 = false, s8 = false, s9 = false, s0 = false,
-            sj = false, sq = false, sk = false,
+            s1: false, s2: false, s3: false, s4: false, s5: false,
+            s6: false, s7: false, s8: false, s9: false, s0: false,
+            sj: false, sq: false, sk: false,
 
-            h1 = false, h2 = false, h3 = false, h4 = false, h5 = false,
-            h6 = false, h7 = false, h8 = false, h9 = false, h0 = false,
-            hj = false, hq = false, hk = false,
+            h1: false, h2: false, h3: false, h4: false, h5: false,
+            h6: false, h7: false, h8: false, h9: false, h0: false,
+            hj: false, hq: false, hk: false,
 
-            d1 = false, d2 = false, d3 = false, d4 = false, d5 = false,
-            d6 = false, d7 = false, d8 = false, d9 = false, d0 = false,
-            dj = false, dq = false, dk = false,
+            d1: false, d2: false, d3: false, d4: false, d5: false,
+            d6: false, d7: false, d8: false, d9: false, d0: false,
+            dj: false, dq: false, dk: false,
 
-            c1 = false, c2 = false, c3 = false, c4 = false, c5 = false,
-            c6 = false, c7 = false, c8 = false, c9 = false, c0 = false,
-            cj = false, cq = false, ck = false,
+            c1: false, c2: false, c3: false, c4: false, c5: false,
+            c6: false, c7: false, c8: false, c9: false, c0: false,
+            cj: false, cq: false, ck: false,
 
-            ja = false, jb = false
+            ja: false, jb: false,
 
-            clean = true
+            clean: true
         }
 
         if (Object.prototype.toString.call(key) === "[object Array]") {

@@ -297,7 +297,7 @@ module.exports = {
             ja = key.findIndex(function(value) {
                 return value === 53 || value === 54;
             });
-            var cardsprea = key.splice(0, ja);
+            var cardsprea = key.splice(0, ja - 1);
 
             if (jf === 53) {
                 jb = key.findIndex(function(value) { return value === 54; });
@@ -337,7 +337,7 @@ module.exports = {
             // process again. If the card is not a joker, then we need to
             // subtract 26 from any output greater than 26 so that we get an
             // output from 1-26 in order to create an alphanumeric value.
-            var output = key[1];
+            var output = key[key[0] - 1];
             if (output !== 53 && output !== 54) {
                 if (output > 26) {
                     genvalues.push(output - 26);

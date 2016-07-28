@@ -1,3 +1,5 @@
+# Prevent users from accidentally committing keys
+*.sdeck
 
 # Created by https://www.gitignore.io/api/node,osx
 

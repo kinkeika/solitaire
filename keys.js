@@ -238,17 +238,109 @@ module.exports = {
                         break;
                     default:
                         return [false, "key[" + i + "] is an invalid number"]
-
-                    if (!numbersHad.clean) {
-                        return [false, "Duplicates exist in the key."]
-                    }
-
-                    // The deck is completely clean and we can return true.
-                    return [true]
                 }
             }
+
+            if (!numbersHad.clean) {
+                return [false, "Duplicates exist in the key."]
+            }
+
+            // The deck is completely clean and we can return true.
+            return [true]
         } else {
             return [false, "Key is not array"];
         }
+    },
+
+    keystream: function(key, values) {
+        // Throw if the key is invalid or values is not a number.
+        if (!this.validateKey(key)[0]) { throw new Error("Invalid key"); }
+        if (typeof values !== "number") { throw new Error("Invalid values arg")}
+
+        // Generate as many values as is required.
+        var genvalues = [];
+        for (var i = 1; genvalues.length !== values; i++) {
+            // Get the index of joker A.
+            var ja = key.findIndex(function(value) { return value === 53; });
+
+            // If it's the bottom card of the deck, then it needs to go just
+            // below the top card.
+            if (ja === 53) {
+                key.splice(ja, 1);
+                key.splice(1, 0, 53);
+            } else {
+                // Else you just swap it with the card beneath.
+                key.splice(ja, 1);
+                key.splice(ja + 1, 0, 53);
+            }
+
+            // Do the same again with joker B, this time moving it two spaces
+            // down unless that would cause it to become the first card.
+            var jb = key.findIndex(function(value) { return value === 54; });
+
+            if (jb === 52) {
+                key.splice(jb, 1);
+                key.splice(1, 0, 54);
+            } else if (jb === 53) {
+                key.splice(jb, 1);
+                key.splice(2, 0, 54);
+            } else {
+                key.splice(jb, 1);
+                key.splice(jb + 1, 0, 53);
+            }
+
+            // Perform the triple cut. All the jokers before joker a, exclusive,
+            // need to be swapped with all the jokers after joker b, exclusive.
+            var jf = key.find(function(value) {
+                return value === 53 || value === 54;
+            });
+            ja = key.findIndex(function(value) {
+                return value === 53 || value === 54;
+            });
+            var cardsprea = key.splice(0, ja);
+
+            if (jf === 53) {
+                jb = key.findIndex(function(value) { return value === 54; });
+            } else if (jf === 54) {
+                jb = key.findIndex(function(value) { return value === 53; });
+            }
+
+            // Iterate the array in reverse so that items are unshifted onto the
+            // key in the right order.
+            for (var j = cardspostb.length - 1; j >= 0; j--) {
+                key.unshift(cardspostb[j]);
+            }
+
+            // For the pushing we do it in the usual order.
+            for (var k = 0; k < cardsprea.length; k++) {
+                key.push(cardsprea[k]);
+            }
+
+            // Now that we have done the triple cut, we need to do a count cut.
+            // We need to determine the value of the bottom card, count that
+            // many cards from the top, and place them just above the bottom.
+
+            // If the bottom card is a joker we do nothing at all, because the
+            // number of cards to move is 53 and the bottom card doesn't move.
+            if (key[53] !== 53 && key[53] !== 54) {
+                // Now that we know that the card isn't a joker, we can do the
+                // cut.
+                var cardscut = key.splice(0, key[53])
+                for (var l = 0; l < cardscut.length; l++) {
+                    key.splice(52, 0, cardscut[l]);
+                }
+            }
+
+            // Now we need to determine the output card. If it's a joker, all
+            // this code has been wasted and we need to go through the whole
+            // process again, else we add the card to the keystream buffer to
+            // be returned to the user at the end of generation.
+            var output = key[1];
+            if (output !== 53 && output !== 54) {
+                genvalues.push(output);
+            }
+        }
+
+        return genvalues;
     }
 }

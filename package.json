@@ -2,7 +2,7 @@
     "name": "solitaire",
     "version": "0.0.0",
 
-    "description": "A node.js utility for the Solitaire cipher.",
+    "description": "A node.js library for the Solitaire cipher.",
     "main": "index.js",
     "repository": {
         "type": "git",

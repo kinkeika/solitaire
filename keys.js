@@ -304,6 +304,7 @@ module.exports = {
             } else if (jf === 54) {
                 jb = key.findIndex(function(value) { return value === 53; });
             }
+            var cardspostb = key.splice(jb + 1, key.length - jb)
 
             // Iterate the array in reverse so that items are unshifted onto the
             // key in the right order.

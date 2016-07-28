@@ -1,5 +1,5 @@
 module.exports = {
-    letterToNumber = function(letter) {
+    letterToNumber: function(letter) {
         switch (letter) {
             case "a":
             case "A":
@@ -82,9 +82,9 @@ module.exports = {
             default:
                 throw new Error("Invalid letter");
         }
-    }
+    },
 
-    numberToLetter = function(number) {
+    numberToLetter: function(number) {
         switch (number) {
             case 1:
                 return "A";

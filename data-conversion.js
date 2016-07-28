@@ -256,5 +256,43 @@ module.exports = {
             default:
                 throw new Error("Invalid card number");
         }
+    },
+
+    inputToStandardisedArray: function(input) {
+        var inputtype;
+        if (Object.prototype.toString.call(input) === "[object Array]") {
+            inputtype = "array";
+            // Iterate over each item in the provided array to ensure it is
+            // valid, and convert nonconforming types to a number if possible.
+            for (var i = 0; i < input.length; i++) {
+                if (typeof input[i] === "number") {
+                    if (input[i] < 1 || input[i] > 26) {
+                        throw new Error("input[" + i + "] out of bounds.");
+                    }
+                } else if (typeof input[i] === "string") {
+                    if (input[i].match(/^[a-zA-Z]$/)) {
+                        input[i] == convert.letterToNumber(input[i]);
+                    } else {
+                        throw new Error("input[" + i + "] invalid string.");
+                    }
+                } else {
+                    throw new Error("input[" + i + "] invalid type.");
+                }
+            }
+        } else if (typeof input === "string") {
+            inputtype = "string";
+            // Drop non A-Z characters
+            input = input.replace(/[^a-zA-Z]/g, "");
+
+            // Convert the rest to an array of numbers and assign it to input.
+            inputArray = [];
+            for (var i = 0; i < input.length; i++) {
+                inputArray[i] = convert.letterToNumber(input.charAt(i));
+            }
+            input = inputArray;
+        } else {
+            throw new Error("Unrecognised type of input");
+        }
+        return [input, inputtype];
     }
 }

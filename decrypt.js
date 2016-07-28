@@ -1,13 +1,13 @@
 convert = require("./data-conversion.js");
 keys = require("./keys.js");
 
-module.exports =  function(plaintext, key, options) {
-    // Convert the plaintext into an array of numbers, one per character.
-    var converted = convert.inputToStandardisedArray(plaintext);
-    plaintext = converted[0];
+module.exports = function(ciphertext, key, options) {
+    // Convert the ciphertext into an array of numbers, one per character.
+    var converted = convert.inputToStandardisedArray(ciphertext);
+    ciphertext = converted[0];
     var inputtype = converted[1];
 
-    // Now that we know we have valid plaintext, we need to validate the key.
+    // Now that we know we have valid ciphertext, we need to validate the key.
     // Fourtanately this is abstracted.
     if (!keys.validateKey(key)[0]) { throw new Error("Invalid key") }
 
@@ -21,11 +21,11 @@ module.exports =  function(plaintext, key, options) {
     }
 
     // Now we can generate the keystream, this is also abstracted.
-    stream = keys.keystream(key, plaintext.length);
+    stream = keys.keystream(key, ciphertext.length);
 
-    // Add every value to the plaintext modulo 26.
-    for (var i = 0; i < plaintext.length; i++) {
-        plaintext[i] = ((plaintext[i] + stream[i]) % 26) + 1;
+    // Subtract every value to the ciphertext modulo 26.
+    for (var i = 0; i < ciphertext.length; i++) {
+        ciphertext[i] = ((ciphertext[i] - stream[i]) % 26) + 1;
     }
 
     // Now give the user the output in their preferred format. If they specified
@@ -53,14 +53,14 @@ module.exports =  function(plaintext, key, options) {
     if (options) {
         if (options.output) {
             if (options.output === "array") {
-                return plaintext;
+                return ciphertext;
             } else {
-                return createStringFromArray(plaintext);
+                return createStringFromArray(ciphertext);
             }
         }
     } else if (inputtype === "array") {
-        return plaintext;
+        return ciphertext;
     } else {
-        return createStringFromArray(plaintext);
+        return createStringFromArray(ciphertext);
     }
 }

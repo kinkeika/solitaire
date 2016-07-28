@@ -333,11 +333,16 @@ module.exports = {
 
             // Now we need to determine the output card. If it's a joker, all
             // this code has been wasted and we need to go through the whole
-            // process again, else we add the card to the keystream buffer to
-            // be returned to the user at the end of generation.
+            // process again. If the card is not a joker, then we need to
+            // subtract 26 from any output greater than 26 so that we get an
+            // output from 1-26 in order to create an alphanumeric value.
             var output = key[1];
             if (output !== 53 && output !== 54) {
-                genvalues.push(output);
+                if (output > 26) {
+                    genvalues.push(output - 26);
+                } else {
+                    genvalues.push(output);
+                }
             }
         }
 

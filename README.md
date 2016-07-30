@@ -24,5 +24,5 @@ key. The deck is shuffled according to the Fisher-Yates algorithm using random
 data of cryptographic quality from the `crypto` library built in to node.js.
 
 [spec]: https://www.schneier.com/academic/solitaire/
-[cli-npm]: [https://npmjs.com/package/solitaire-cli]
-[cli-git]: [https://github.com/defectivebit/solitaire-cli]
+[cli-npm]: https://npmjs.com/package/solitaire-cli
+[cli-git]: https://github.com/defectivebit/solitaire-cli

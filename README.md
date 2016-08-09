@@ -2,8 +2,9 @@
 
 This is a node.js library for the [Solitaire][spec] cipher.
 
-**This library has several bugs in keystream generation and is not suitable for
-production yet.**
+## Work in Progress
+The code is functional but is not very clean. A cleaned up verison is coming
+soon as a 1.0.0
 
 ## Command line utility
 

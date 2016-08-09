@@ -252,94 +252,74 @@ module.exports = {
         }
     },
 
-    keystream: function(key, values) {
+    keystream: function(deck, values) {
+        // Clone the deck value into var key. This avoids mutating the user's
+        // value unexpectedly.
+        var key = deck.slice(0);
+
         // Throw if the key is invalid or values is not a number.
-        if (!this.validateKey(key)[0]) { throw new Error("Invalid key"); }
-        console.log("keystream: key is valid \n");
-        if (typeof values !== "number") { throw new Error("Invalid values arg")}
-        console.log("keystream: values arg is valid\n");
+        if (!this.validateKey(key)[0]) {throw new Error("Invalid key");}
+        if (typeof values !== "number") {throw new Error("Invalid values arg");}
 
         // Generate as many values as is required.
         var genvalues = [];
-        console.log("keystream: the key is " + key.toString() + "\n");
-        console.log("keystream: " + values + " values are required. \n");
-        for (var i = 1; genvalues.length !== values; i++) {
+        while (genvalues.length !== values) {
             // Get the index of joker A.
             var ja = key.findIndex(function(value) { return value === 53; });
-            console.log("keystream: iteration " + i + " and the index of joker a is " + ja + "\n");
 
             // If it's the bottom card of the deck, then it needs to go just
             // below the top card.
             if (ja === 53) {
                 key.splice(ja, 1);
                 key.splice(1, 0, 53);
-                console.log("keystream: joker a is the bottom card and now should be just below the top card.\n")
             } else {
                 // Else you just swap it with the card beneath.
                 key.splice(ja, 1);
                 key.splice(ja + 1, 0, 53);
-                console.log("keystream: joker a is not the bottom card and has been swapped with the card beneath it.\n");
             }
-            console.log("keystream: the deck now looks like this: " + key.toString() + "\n");
 
             // Do the same again with joker B, this time moving it two spaces
             // down unless that would cause it to become the first card.
             var jb = key.findIndex(function(value) { return value === 54; });
-            console.log("keystream: the index of joker b is " + jb + "\n");
 
             if (jb === 52) {
                 key.splice(jb, 1);
                 key.splice(1, 0, 54);
-                console.log("keystream: joker b is the second to last card and is being placed just below the top card.\n");
             } else if (jb === 53) {
                 key.splice(jb, 1);
                 key.splice(2, 0, 54);
-                console.log("keystream: joker b is the last card and is being placed after the second card from the top.\n");
             } else {
                 key.splice(jb, 1);
-                key.splice(jb + 1, 0, 53);
-                console.log("keystream: joker b is not one of the two last card and is being placed after the second card beneath it.\n");
+                key.splice(jb + 2, 0, 54);
             }
-            console.log("keystream: the deck now looks like this: " + key.toString() + "\n");
 
             // Perform the triple cut. All the cards before joker a, exclusive,
             // need to be swapped with all the cards after joker b, exclusive.
             var jf = key.find(function(value) {
                 return value === 53 || value === 54;
             });
-            console.log("keystream: the first joker found was " + jf + "\n");
             ja = key.findIndex(function(value) {
                 return value === 53 || value === 54;
             });
-            console.log("keystream: the index of the first joker is " + ja + "\n");
-            var cardsprea = key.splice(0, ja - 1);
-            console.log("keystream: removed the cards before the first joker. these cards are " + cardsprea.toString() + "\n");
-            console.log("keystream: the deck now looks like this: " + key.toString() + "\n");
+            var cardsprea = key.splice(0, ja);
 
             if (jf === 53) {
                 jb = key.findIndex(function(value) { return value === 54; });
             } else if (jf === 54) {
                 jb = key.findIndex(function(value) { return value === 53; });
             }
-            console.log("keystream: the index of the second joker is " + jb + "\n");
             var cardspostb = key.splice(jb + 1, key.length - jb)
-            console.log("keystream: removed the cards after the second joker. These cards are " + cardspostb.toString() + "\n");
-            console.log("keystream: the deck now looks like this: " + keys.toString() + "\n");
 
             // Iterate the array in reverse so that items are unshifted onto the
             // key in the right order.
             for (var j = cardspostb.length - 1; j >= 0; j--) {
                 key.unshift(cardspostb[j]);
             }
-            console.log("keystream: iterated the array in reverse and unshifted the cardspostb onto the deck.\n");
-            console.log("keystream: the deck now looks like this: " + keys.toString() + "\n");
 
             // For the pushing we do it in the usual order.
             for (var k = 0; k < cardsprea.length; k++) {
                 key.push(cardsprea[k]);
             }
-            console.log("keystream: in the usual order, pushing the cardsprea onto the deck.\n");
-            console.log("keystream: the deck now looks like this: " + keys.toString() + "\n");
 
             // Now that we have done the triple cut, we need to do a count cut.
             // We need to determine the value of the bottom card, count that
@@ -350,38 +330,26 @@ module.exports = {
             if (key[53] !== 53 && key[53] !== 54) {
                 // Now that we know that the card isn't a joker, we can do the
                 // cut.
-                console.log("keystream: the bottom card is not a joker so we will perform the count cut now.\n");
-                console.log("keystream: the value of the bottom card is: " + key[53] + "\n");
                 var cardscut = key.splice(0, key[53])
-                console.log("keystream: the following cards were cut from the deck: " + cardscut + "\n");
-                console.log("keystream: the deck now looks like this: " + key.toString() + "\n");
-                console.log("keystream: splicing the cardscut into the deck.\n");
                 for (var l = 0; l < cardscut.length; l++) {
-                    key.splice(52, 0, cardscut[l]);
+                    key.splice((key.length - 1), 0, cardscut[l]);
                 }
-                console.log("keystream: the deck now looks like this: " + key.toString() + "\n");
-            } else { console.log("keystream: since the bottom card of the deck is a joker, we won't bother with the count cut since nothing will move since the bottom card cannot move.\n");}
+            }
 
             // Now we need to determine the output card. If it's a joker, all
             // this code has been wasted and we need to go through the whole
             // process again. If the card is not a joker, then we need to
             // subtract 26 from any output greater than 26 so that we get an
             // output from 1-26 in order to create an alphanumeric value.
-            console.log("keystream: now it is time to determine the output card.\n")
-            var output = key[key[0] - 1];
-            console.log("keystream: the output card is " + output + "\n");
+            var output = key[key[0] + 1];
             if (output !== 53 && output !== 54) {
                 if (output > 26) {
-                    console.log("keystream: since the output value is greater than 26, we subtract 26 giving " + (output - 26) + "\n")
                     genvalues.push(output - 26);
                 } else {
-                    console.log("keystream: since the output card is less than or equal to 26, we can leave it as is since it's already a letter.\n");
                     genvalues.push(output);
                 }
-            } else {console.log("keystream: since the output card is a joker, it's not actually pushed into the genvalues stack.");}
+            }
         }
-
-        console.log("keystream: the genvalues are " + genvalues + "\n")
 
         return genvalues;
     }
